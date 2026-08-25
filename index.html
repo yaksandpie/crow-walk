@@ -1,0 +1,950 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wildwood Crow Tracker</title>
+<meta name="description" content="Personal checklist for spotting all 30 crow sculptures on Portland's Wildwood art trail.">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Crow Tracker">
+<meta name="theme-color" content="#eef0e6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121a15" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eef0e6;
+    --surface: #ffffff;
+    --surface-2: #e3e7da;
+    --ink: #16201a;
+    --ink-soft: #384335;
+    --muted: #5b6b58;
+    --line: #cfd6c4;
+    --accent: #c97f1f;
+    --accent-ink: #fff7ea;
+    --accent-2: #2f8577;
+    --shadow: 0 1px 2px rgba(20, 30, 20, 0.06), 0 6px 20px rgba(20, 30, 20, 0.05);
+    --radius: 14px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121a15;
+      --surface: #1b241d;
+      --surface-2: #202b22;
+      --ink: #edf1e6;
+      --ink-soft: #cfd8c7;
+      --muted: #93a38d;
+      --line: #34412f;
+      --accent: #e8a33d;
+      --accent-ink: #201202;
+      --accent-2: #6cc0ae;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #121a15;
+    --surface: #1b241d;
+    --surface-2: #202b22;
+    --ink: #edf1e6;
+    --ink-soft: #cfd8c7;
+    --muted: #93a38d;
+    --line: #34412f;
+    --accent: #e8a33d;
+    --accent-ink: #201202;
+    --accent-2: #6cc0ae;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  body {
+    font-family: "Karla", ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  a { color: var(--accent-2); }
+
+  .wrap {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 0 18px 64px;
+  }
+
+  /* ---------- Header ---------- */
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+    padding: 22px 0 14px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    display: inline-block;
+  }
+
+  h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(28px, 7vw, 36px);
+    margin: 4px 0 2px;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+
+  .sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 16px;
+    max-width: 46ch;
+  }
+
+  .progress-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .progress-count {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  .progress-count b {
+    font-size: 18px;
+    color: var(--ink);
+  }
+
+  .progress-track {
+    position: relative;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+
+  .progress-fill {
+    position: absolute;
+    inset: 0;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-2), var(--accent));
+    border-radius: 999px;
+    transition: width 0.5s cubic-bezier(.4,1.4,.5,1);
+  }
+
+  .view-toggle {
+    display: flex;
+    gap: 6px;
+    margin-top: 16px;
+  }
+
+  .view-btn {
+    flex: 1;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.03em;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-soft);
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .view-btn:hover { border-color: var(--accent-2); }
+
+  .view-btn[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-top: 14px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .tabs[hidden] { display: none; }
+
+  .tab {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+
+  .tab:hover { border-color: var(--accent-2); }
+
+  .tab[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+
+  :root[data-theme="dark"] .tab[aria-pressed="true"],
+  @media (prefers-color-scheme: dark) { }
+
+  /* ---------- Areas / groups ---------- */
+
+  .area {
+    margin-top: 26px;
+  }
+
+  .area summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 2px 0 10px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .area summary::-webkit-details-marker { display: none; }
+
+  .area-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 19px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .area-count {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chevron {
+    color: var(--muted);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .area[open] .chevron { transform: rotate(90deg); }
+
+  .area-flash { animation: area-flash-anim 1.2s ease; }
+
+  @keyframes area-flash-anim {
+    0% { background: rgba(111, 176, 163, 0.22); border-radius: 12px; }
+    100% { background: transparent; }
+  }
+
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  /* ---------- Card ---------- */
+
+  .card {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 13px 14px;
+    transition: border-color 0.15s ease;
+  }
+
+  .card.has-photo {
+    border-color: var(--accent-2);
+    cursor: zoom-in;
+  }
+
+  .card.has-photo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--card-bg-img);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.5;
+  }
+
+  .card-body { position: relative; z-index: 1; }
+
+  .card.has-photo .card-body {
+    background: rgba(8, 10, 8, 0.6);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: -3px -4px;
+  }
+
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .num {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .card.has-photo .num { color: rgba(255, 255, 255, 0.7); }
+
+  .name {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--ink);
+  }
+
+  .card.has-photo .name { color: #f7f4ea; }
+
+  .name.placeholder { color: var(--muted); font-style: italic; font-weight: 400; }
+
+  .artist {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  .card.has-photo .artist { color: rgba(247, 244, 234, 0.75); }
+
+  .loc-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+  }
+
+  .card.has-photo .loc-row { color: rgba(247, 244, 234, 0.85); }
+
+  .card-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 8px;
+  }
+
+  .card.has-photo .card-actions .link-btn { color: #7fd0bf; }
+
+  .link-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: "Karla", sans-serif;
+    font-size: 12.5px;
+    color: var(--accent-2);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .link-btn:hover { text-decoration: underline; }
+
+  /* ---------- Map view ---------- */
+
+  #mapView[hidden], #areas[hidden] { display: none; }
+
+  .map-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin-top: 22px;
+  }
+
+  .river {
+    fill: none;
+    stroke: #6f9fc4;
+    stroke-width: 22;
+    stroke-linecap: round;
+    opacity: 0.32;
+  }
+
+  .river-label {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    fill: var(--muted);
+  }
+
+  .map-pin { cursor: pointer; }
+
+  .map-pin circle {
+    transition: fill-opacity 0.3s ease, stroke-width 0.15s ease;
+  }
+
+  .map-pin:hover circle,
+  .map-pin:focus-visible circle {
+    stroke-width: 3;
+  }
+
+  .map-pin:focus-visible { outline: none; }
+
+  .pin-count {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--ink);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+
+  .pin-label {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    fill: var(--ink-soft);
+    pointer-events: none;
+  }
+
+  .map-note {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* ---------- Footer ---------- */
+
+  footer {
+    margin-top: 40px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
+  footer p { margin: 0 0 10px; }
+
+  .reset-btn {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    padding: 6px 11px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .empty {
+    padding: 30px 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 14, 10, 0.88);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 50;
+    cursor: zoom-out;
+  }
+
+  .lightbox[hidden] { display: none; }
+
+  .lightbox img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Portland, OR &middot; Aug 7 &ndash; Nov 1, 2026</div>
+    <h1>Wildwood Crow Tracker</h1>
+    <p class="sub">Thirty hand-painted crow sculptures are perched around Portland for LAIKA's <em>Wildwood</em> art trail. This is your personal, offline checklist for spotting them all.</p>
+    <div class="progress-row">
+      <span class="progress-count"><b id="foundNum">0</b> / 30 spotted</span>
+      <span class="progress-count" id="pctNum">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="view-toggle" role="tablist" aria-label="View">
+      <button class="view-btn" data-view="list" aria-pressed="true">List</button>
+      <button class="view-btn" data-view="map" aria-pressed="false">Map</button>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" data-filter="all" aria-pressed="true">All</button>
+      <button class="tab" data-filter="unspotted" aria-pressed="false">Still hunting</button>
+      <button class="tab" data-filter="spotted" aria-pressed="false">Spotted</button>
+    </div>
+  </header>
+
+  <main id="areas"></main>
+  <div id="mapView" hidden></div>
+
+  <footer>
+    <p><strong>About this data:</strong> All 30 titles, artists and locations come straight from the official <em>Wildwood: Follow the Crows</em> <a href="https://ohsufoundation.org/wp-content/uploads/2026/08/2026_DCH_LAIKA_Wildwood-Art-Trail-Map_UPDATED_Web.pdf" target="_blank" rel="noopener">trail map PDF</a> (OHSU Foundation, Aug 2026). A crow counts as spotted the moment you add a photo of it. Your photos save automatically &mdash; but only to this browser, on this device. They won't follow you to another phone or browser, and clearing site data will erase them, so nothing here is backed up.</p>
+    <button class="reset-btn" id="resetBtn">Reset all progress</button>
+  </footer>
+</div>
+
+<input type="file" id="photoInput" accept="image/*" style="display:none">
+<div class="lightbox" id="lightbox" hidden><img id="lightboxImg" alt="Enlarged crow photo"></div>
+
+<script>
+  const CROWS = [
+    { id: 1, name: "Be Kind", artist: "Celeste Potgieter", location: "SW 5th Ave & Ankeny St", area: "Downtown core" },
+    { id: 2, name: "Oregon Botanica", artist: "Emma van Halsema", location: "Main Street Plaza, next to Arlene Schnitzer Concert Hall", area: "Downtown core" },
+    { id: 3, name: "Paul Birdyan", artist: "Michael Buchino", location: "Pride Plaza, SW Harvey Milk St", area: "Downtown core" },
+    { id: 4, name: "Bloom", artist: "Victoria Smith", location: "Portland Art Museum, East Plaza", area: "Downtown core" },
+    { id: 5, name: "Flying Fields Forever", artist: "Sue-Del McCulloch", location: "Director Park", area: "Downtown core" },
+    { id: 6, name: "Overgrowth", artist: "Rae Sheridan", location: "Pioneer Courthouse Square", area: "Downtown core" },
+    { id: 7, name: "On a Mission", artist: "Nelson Lowry", location: "Pittock Mansion", area: "Forest Park — Wildwood sequence" },
+    { id: 8, name: "As the Crow Flies", artist: "Jordan Mason", location: "Central Library", area: "Downtown core" },
+    { id: 9, name: "Feather and Flowers", artist: "Sam Warford", location: "South Park Blocks / Farmer's Market", area: "Downtown core" },
+    { id: 10, name: "Ravel", artist: "Reshidev RK", location: "NW 13th Ave & NW Everett St", area: "Pearl District" },
+    { id: 11, name: "Heart of the Forest", artist: "Ana the Artist", location: "Bird Alliance of Oregon", area: "Forest Park — Wildwood sequence" },
+    { id: 12, name: "Stash", artist: "Stephanie Hower Derheimer", location: "OHSU Knight Cancer Research Building", area: "South Waterfront" },
+    { id: 13, name: "Back Alley Flora", artist: "Ruben Lancaster", location: "Albina Vision Trust, N Williams Ave", area: "North / Northeast" },
+    { id: 14, name: "Iridescence", artist: "Daisy Nolz", location: "Saturday Market, Tom McCall Waterfront Park", area: "Waterfront Park" },
+    { id: 15, name: "A Murder Huddle", artist: "Allison McClay", location: "OMSI", area: "Central Eastside" },
+    { id: 16, name: "Mirrorball Messenger", artist: "Isi Matasavage", location: "Darcelle XV Plaza", area: "Downtown core" },
+    { id: 17, name: "Sakura Hanami", artist: "Maya McDarragh", location: "City Hall", area: "Downtown core" },
+    { id: 18, name: "A Crow of a Different Color", artist: "Mike Bennett", location: "Lincoln High School", area: "Downtown core" },
+    { id: 19, name: "DUSK", artist: "KSRA", location: "Tom McCall Waterfront Park, SW Clay St", area: "Waterfront Park" },
+    { id: 20, name: "Emergence", artist: "Olivia Mount", location: "Tom McCall Waterfront Park, Salmon Springs", area: "Waterfront Park" },
+    { id: 21, name: "The Shape of Us", artist: "Tristan ‘TK’ Irving", location: "Pod Plaza", area: "Pearl District" },
+    { id: 22, name: "Sir Timber Cawthorne", artist: "Lizzie Keenan", location: "International Rose Test Garden", area: "Forest Park — Wildwood sequence" },
+    { id: 23, name: "Do-nuts for Portland", artist: "Julianne Zane", location: "Ankeny Alley", area: "Old Town / Chinatown" },
+    { id: 24, name: "Kindred Spirits", artist: "Lil Hobbit Cosmonaut", location: "Keller Fountain", area: "Downtown core" },
+    { id: 25, name: "Freak’n Crow", artist: "Freaky Footwear", location: "Jamison Square", area: "Pearl District" },
+    { id: 26, name: "Sir Chester", artist: "Nina Oberlin", location: "Lan Su Chinese Garden", area: "Old Town / Chinatown" },
+    { id: 27, name: "Vuela Corazón", artist: "Christian Tellez Garcia", location: "North Park Blocks", area: "Old Town / Chinatown" },
+    { id: 28, name: "Midnight Crow", artist: "Amanda Burns", location: "Couch Park", area: "NW / Alphabet District" },
+    { id: 29, name: "Watercolor Crow", artist: "Rose Jubb", location: "Yamhill Pedestrian Plaza", area: "Downtown core" },
+    { id: 30, name: "The World of Wildwood", artist: "Carson Ellis", location: "St. Johns Library", area: "St. Johns" },
+  ];
+
+  const DB_NAME = "wildwood-crow-photos";
+  const STORE_NAME = "photos";
+
+  function openPhotoDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = () => req.result.createObjectStore(STORE_NAME);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+  const dbPromise = openPhotoDB();
+
+  async function savePhotoBlob(id, blob) {
+    const db = await dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      tx.objectStore(STORE_NAME).put(blob, id);
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+  async function deletePhotoBlob(id) {
+    const db = await dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      tx.objectStore(STORE_NAME).delete(id);
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+  async function clearAllPhotos() {
+    const db = await dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      tx.objectStore(STORE_NAME).clear();
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+  async function loadAllPhotos() {
+    const db = await dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const req = tx.objectStore(STORE_NAME).openCursor();
+      const out = {};
+      req.onsuccess = e => {
+        const cursor = e.target.result;
+        if (cursor) { out[cursor.key] = cursor.value; cursor.continue(); }
+        else resolve(out);
+      };
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  function compressImage(file, maxDim = 900, quality = 0.82) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
+            else { width = Math.round(width * maxDim / height); height = maxDim; }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+          canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("toBlob failed")), "image/jpeg", quality);
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  let photos = {};
+  let pendingPhotoId = null;
+  let activeFilter = "all";
+  let areaElements = {};
+
+  function hasPhoto(id) { return !!photos[id]; }
+
+  function areaOrder() {
+    const seen = [];
+    CROWS.forEach(c => { if (!seen.includes(c.area)) seen.push(c.area); });
+    return seen;
+  }
+
+  const AREA_POS = {
+    "St. Johns": { x: 100, y: 36, label: "St. Johns" },
+    "Forest Park — Wildwood sequence": { x: 50, y: 130, label: "Forest Park" },
+    "NW / Alphabet District": { x: 55, y: 230, label: "NW District" },
+    "Pearl District": { x: 140, y: 185, label: "Pearl District" },
+    "North / Northeast": { x: 250, y: 165, label: "N/NE Portland" },
+    "Old Town / Chinatown": { x: 150, y: 270, label: "Old Town" },
+    "Downtown core": { x: 135, y: 365, label: "Downtown" },
+    "Waterfront Park": { x: 205, y: 340, label: "Waterfront" },
+    "Central Eastside": { x: 258, y: 330, label: "Eastside (OMSI)" },
+    "South Waterfront": { x: 165, y: 465, label: "S. Waterfront" },
+  };
+
+  function areaStats(area) {
+    const inArea = CROWS.filter(c => c.area === area);
+    return { total: inArea.length, spotted: inArea.filter(c => hasPhoto(c.id)).length };
+  }
+
+  function renderMap() {
+    const mapEl = document.getElementById("mapView");
+    const pins = areaOrder().map(area => {
+      const info = AREA_POS[area];
+      if (!info) return "";
+      const { total, spotted } = areaStats(area);
+      const r = 15 + Math.min(total, 13) * 1.6;
+      const frac = total ? spotted / total : 0;
+      const fillOpacity = (0.12 + 0.78 * frac).toFixed(2);
+      return `
+        <g class="map-pin" data-action="jump-area" data-area="${escapeHtml(area)}" role="button" tabindex="0" aria-label="${escapeHtml(info.label)}: ${spotted} of ${total} spotted">
+          <circle cx="${info.x}" cy="${info.y}" r="${r}" fill="var(--accent-2)" fill-opacity="${fillOpacity}" stroke="var(--accent-2)" stroke-width="2" />
+          <text x="${info.x}" y="${info.y + 4}" text-anchor="middle" class="pin-count">${spotted}/${total}</text>
+          <text x="${info.x}" y="${info.y + r + 15}" text-anchor="middle" class="pin-label">${escapeHtml(info.label)}</text>
+        </g>
+      `;
+    }).join("");
+
+    mapEl.innerHTML = `
+      <svg viewBox="0 0 320 600" class="map-svg" role="img" aria-label="Schematic map of Portland showing crow clusters by neighborhood">
+        <path d="M210,0 C190,80 225,150 200,220 C180,270 220,300 205,380 C195,430 215,470 205,600" class="river" />
+        <text x="222" y="500" class="river-label" transform="rotate(-8 222 500)">Willamette River</text>
+        ${pins}
+      </svg>
+      <p class="map-note">Schematic layout, not to scale &mdash; tap a cluster to jump to it in the list.</p>
+    `;
+  }
+
+  function jumpToArea(area) {
+    document.querySelector('.view-btn[data-view="list"]').click();
+    const allTab = document.querySelector('.tab[data-filter="all"]');
+    if (allTab.getAttribute("aria-pressed") !== "true") allTab.click();
+    requestAnimationFrame(() => {
+      const target = areaElements[area];
+      if (!target) return;
+      target.open = true;
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      target.classList.add("area-flash");
+      setTimeout(() => target.classList.remove("area-flash"), 1200);
+    });
+  }
+
+  function matchesFilter(crow) {
+    if (activeFilter === "all") return true;
+    if (activeFilter === "spotted") return hasPhoto(crow.id);
+    if (activeFilter === "unspotted") return !hasPhoto(crow.id);
+    return true;
+  }
+
+  function render() {
+    const areasEl = document.getElementById("areas");
+    areasEl.innerHTML = "";
+    areaElements = {};
+    const foundCount = CROWS.filter(c => hasPhoto(c.id)).length;
+
+    document.getElementById("foundNum").textContent = foundCount;
+    document.getElementById("pctNum").textContent = Math.round((foundCount / 30) * 100) + "%";
+    document.getElementById("progressFill").style.width = (foundCount / 30 * 100) + "%";
+
+    let anyVisible = false;
+
+    areaOrder().forEach(area => {
+      const crowsInArea = CROWS.filter(c => c.area === area).filter(c => matchesFilter(c));
+      if (crowsInArea.length === 0) return;
+      anyVisible = true;
+
+      const details = document.createElement("details");
+      details.className = "area";
+      details.open = true;
+      areaElements[area] = details;
+
+      const spottedInArea = CROWS.filter(c => c.area === area).filter(c => hasPhoto(c.id)).length;
+      const totalInArea = CROWS.filter(c => c.area === area).length;
+
+      const summary = document.createElement("summary");
+      summary.innerHTML = `
+        <span class="area-title"><svg class="chevron" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M5 2l7 6-7 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${area}</span>
+        <span class="area-count">${spottedInArea}/${totalInArea}</span>
+      `;
+      details.appendChild(summary);
+
+      const cardsWrap = document.createElement("div");
+      cardsWrap.className = "cards";
+
+      crowsInArea.forEach(crow => {
+        const displayName = crow.name;
+        const displayArtist = crow.artist;
+        const displayLoc = crow.location;
+
+        const photoUrl = photos[crow.id] ? photos[crow.id].url : null;
+
+        const card = document.createElement("div");
+        card.className = "card" + (photoUrl ? " has-photo" : "");
+        if (photoUrl) {
+          card.dataset.action = "photo-view";
+          card.dataset.id = crow.id;
+          card.style.setProperty("--card-bg-img", `url("${photoUrl}")`);
+        }
+
+        const mapsQuery = encodeURIComponent((displayLoc || area) + ", Portland, OR");
+        const nameHtml = displayName
+          ? `<span class="name">${escapeHtml(displayName)}</span>`
+          : `<span class="name placeholder">Untitled sculpture</span>`;
+
+        card.innerHTML = `
+          <div class="card-body">
+            <div class="card-head">
+              <span class="num">#${String(crow.id).padStart(2, "0")}</span>
+              ${nameHtml}
+            </div>
+            ${displayArtist ? `<div class="artist">${escapeHtml(displayArtist)}</div>` : ""}
+            <div class="loc-row">
+              <span>&#128205;</span>
+              <span>${escapeHtml(displayLoc)}</span>
+            </div>
+            <div class="card-actions">
+              ${displayLoc ? `<a class="link-btn" href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" rel="noopener">Open in Maps</a>` : ""}
+              <button class="link-btn" data-action="photo-pick" data-id="${crow.id}">${photoUrl ? "Retake photo" : "Add photo"}</button>
+              ${photoUrl ? `<button class="link-btn" data-action="photo-remove" data-id="${crow.id}">Remove photo</button>` : ""}
+            </div>
+          </div>
+        `;
+        cardsWrap.appendChild(card);
+      });
+
+      details.appendChild(cardsWrap);
+      areasEl.appendChild(details);
+    });
+
+    if (!anyVisible) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "Nothing here yet — try a different filter.";
+      areasEl.appendChild(empty);
+    }
+
+    renderMap();
+  }
+
+  function escapeHtml(str) {
+    return (str || "").replace(/[&<>"']/g, m => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[m]));
+  }
+
+  document.getElementById("areas").addEventListener("click", e => {
+    if (e.target.closest("a")) return;
+    const btn = e.target.closest("[data-action]");
+    if (!btn) return;
+    const action = btn.dataset.action;
+    const id = btn.dataset.id;
+    if (action === "photo-pick") {
+      pendingPhotoId = Number(id);
+      document.getElementById("photoInput").click();
+    } else if (action === "photo-remove") {
+      const numId = Number(id);
+      if (photos[numId]) URL.revokeObjectURL(photos[numId].url);
+      delete photos[numId];
+      deletePhotoBlob(numId);
+      render();
+    } else if (action === "photo-view") {
+      openLightbox(photos[Number(id)].url);
+    }
+  });
+
+  document.getElementById("photoInput").addEventListener("change", async e => {
+    const file = e.target.files[0];
+    e.target.value = "";
+    if (!file || pendingPhotoId === null) return;
+    try {
+      const blob = await compressImage(file);
+      await savePhotoBlob(pendingPhotoId, blob);
+      if (photos[pendingPhotoId]) URL.revokeObjectURL(photos[pendingPhotoId].url);
+      photos[pendingPhotoId] = { blob, url: URL.createObjectURL(blob) };
+      render();
+    } catch (err) {
+      alert("Couldn't save that photo — try a different one.");
+    }
+    pendingPhotoId = null;
+  });
+
+  function openLightbox(url) {
+    document.getElementById("lightboxImg").src = url;
+    document.getElementById("lightbox").hidden = false;
+  }
+  document.getElementById("lightbox").addEventListener("click", () => {
+    document.getElementById("lightbox").hidden = true;
+  });
+
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-pressed", "false"));
+      tab.setAttribute("aria-pressed", "true");
+      activeFilter = tab.dataset.filter;
+      render();
+    });
+  });
+
+  document.querySelectorAll(".view-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".view-btn").forEach(b => b.setAttribute("aria-pressed", "false"));
+      btn.setAttribute("aria-pressed", "true");
+      const isMap = btn.dataset.view === "map";
+      document.getElementById("areas").hidden = isMap;
+      document.getElementById("mapView").hidden = !isMap;
+      document.querySelector(".tabs").hidden = isMap;
+    });
+  });
+
+  function handleMapPin(target) {
+    const pin = target.closest('[data-action="jump-area"]');
+    if (pin) jumpToArea(pin.dataset.area);
+  }
+  document.getElementById("mapView").addEventListener("click", e => handleMapPin(e.target));
+  document.getElementById("mapView").addEventListener("keydown", e => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    if (!e.target.closest('[data-action="jump-area"]')) return;
+    e.preventDefault();
+    handleMapPin(e.target);
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", async () => {
+    if (confirm("Clear all photos? This can't be undone.")) {
+      Object.values(photos).forEach(p => URL.revokeObjectURL(p.url));
+      photos = {};
+      await clearAllPhotos();
+      render();
+    }
+  });
+
+  (async function init() {
+    try {
+      const stored = await loadAllPhotos();
+      Object.keys(stored).forEach(k => {
+        const blob = stored[k];
+        photos[k] = { blob, url: URL.createObjectURL(blob) };
+      });
+    } catch (e) {}
+    render();
+  })();
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
