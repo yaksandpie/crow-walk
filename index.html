@@ -45,6 +45,7 @@
       --accent: #e8a33d;
       --accent-ink: #201202;
       --accent-2: #6cc0ae;
+      --crow-eye: #6b4226;
       --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
     }
   }
@@ -60,6 +61,7 @@
     --accent: #e8a33d;
     --accent-ink: #201202;
     --accent-2: #6cc0ae;
+    --crow-eye: #6b4226;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
   }
 
@@ -586,7 +588,7 @@
         <svg viewBox="0 0 100 100" role="img" aria-hidden="true">
           <path fill="var(--ink)" d="M22 68 L8 80 L30 74 Z"/>
           <circle fill="var(--ink)" cx="52" cy="56" r="28"/>
-          <ellipse fill="var(--ink)" stroke="var(--bg)" stroke-width="2" cx="74" cy="60" rx="13" ry="19" transform="rotate(-15 74 60)"/>
+          <ellipse fill="var(--ink)" stroke="var(--bg)" stroke-width="2" cx="80" cy="76" rx="8" ry="12" transform="rotate(-15 80 76)"/>
           <path fill="var(--ink)" d="M42 30 L46 14 L50 30 Z"/>
           <path fill="var(--ink)" d="M48 27 L53 8 L58 27 Z"/>
           <path fill="var(--ink)" d="M56 30 L62 14 L66 30 Z"/>
@@ -594,8 +596,8 @@
           <circle fill="var(--accent)" opacity="0.3" cx="72" cy="63" r="5"/>
           <circle fill="var(--surface)" cx="42" cy="52" r="9"/>
           <circle fill="var(--surface)" cx="64" cy="52" r="9"/>
-          <circle fill="var(--accent-2)" cx="42" cy="51" r="4.5"/>
-          <circle fill="var(--accent-2)" cx="64" cy="51" r="4.5"/>
+          <circle fill="var(--crow-eye, var(--accent-2))" cx="42" cy="51" r="4.5"/>
+          <circle fill="var(--crow-eye, var(--accent-2))" cx="64" cy="51" r="4.5"/>
           <circle fill="var(--surface)" cx="44.5" cy="48.5" r="1.6"/>
           <circle fill="var(--surface)" cx="66.5" cy="48.5" r="1.6"/>
           <path fill="var(--accent)" d="M46 63 L52 72 L58 63 Z"/>
@@ -641,7 +643,7 @@
   const MASCOT_SVG = `<svg viewBox="0 0 100 100" role="img" aria-hidden="true">
     <path fill="var(--ink)" d="M22 68 L8 80 L30 74 Z"/>
     <circle fill="var(--ink)" cx="52" cy="56" r="28"/>
-    <ellipse fill="var(--ink)" stroke="var(--bg)" stroke-width="2" cx="74" cy="60" rx="13" ry="19" transform="rotate(-15 74 60)"/>
+    <ellipse fill="var(--ink)" stroke="var(--bg)" stroke-width="2" cx="80" cy="76" rx="8" ry="12" transform="rotate(-15 80 76)"/>
     <path fill="var(--ink)" d="M42 30 L46 14 L50 30 Z"/>
     <path fill="var(--ink)" d="M48 27 L53 8 L58 27 Z"/>
     <path fill="var(--ink)" d="M56 30 L62 14 L66 30 Z"/>
@@ -649,8 +651,8 @@
     <circle fill="var(--accent)" opacity="0.3" cx="72" cy="63" r="5"/>
     <circle fill="var(--surface)" cx="42" cy="52" r="9"/>
     <circle fill="var(--surface)" cx="64" cy="52" r="9"/>
-    <circle fill="var(--accent-2)" cx="42" cy="51" r="4.5"/>
-    <circle fill="var(--accent-2)" cx="64" cy="51" r="4.5"/>
+    <circle fill="var(--crow-eye, var(--accent-2))" cx="42" cy="51" r="4.5"/>
+    <circle fill="var(--crow-eye, var(--accent-2))" cx="64" cy="51" r="4.5"/>
     <circle fill="var(--surface)" cx="44.5" cy="48.5" r="1.6"/>
     <circle fill="var(--surface)" cx="66.5" cy="48.5" r="1.6"/>
     <path fill="var(--accent)" d="M46 63 L52 72 L58 63 Z"/>
