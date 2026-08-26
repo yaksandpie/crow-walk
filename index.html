@@ -16,7 +16,7 @@
 <meta name="theme-color" content="#121a15" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@500;600;700&family=Karla:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #eef0e6;
@@ -30,7 +30,7 @@
     --accent-ink: #fff7ea;
     --accent-2: #2f8577;
     --shadow: 0 1px 2px rgba(20, 30, 20, 0.06), 0 6px 20px rgba(20, 30, 20, 0.05);
-    --radius: 14px;
+    --radius: 20px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -103,10 +103,36 @@
     border-bottom: 1px solid var(--line);
   }
 
+  .brand-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .mascot {
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .mascot svg { display: block; width: 100%; height: 100%; }
+
+  .mascot-header {
+    width: 54px;
+    height: 54px;
+    margin-top: 2px;
+    animation: mascot-bob 3.4s ease-in-out infinite;
+  }
+
+  @keyframes mascot-bob {
+    0%, 100% { transform: rotate(-8deg) translateY(0); }
+    50% { transform: rotate(-4deg) translateY(-3px); }
+  }
+
   .eyebrow {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Quicksand", ui-rounded, sans-serif;
+    font-weight: 600;
     font-size: 11px;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--accent-2);
     display: flex;
@@ -124,8 +150,8 @@
   }
 
   h1 {
-    font-family: "Fraunces", Georgia, serif;
-    font-weight: 600;
+    font-family: "Baloo 2", ui-rounded, "Segoe UI", sans-serif;
+    font-weight: 700;
     font-size: clamp(28px, 7vw, 36px);
     margin: 4px 0 2px;
     text-wrap: balance;
@@ -148,15 +174,20 @@
   }
 
   .progress-count {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Quicksand", ui-rounded, sans-serif;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
     font-size: 14px;
     color: var(--ink-soft);
   }
 
   .progress-count b {
-    font-size: 18px;
+    font-size: 15px;
+    font-weight: 700;
     color: var(--ink);
+    background: var(--surface-2);
+    padding: 2px 10px;
+    border-radius: 999px;
   }
 
   .progress-track {
@@ -185,11 +216,12 @@
 
   .view-btn {
     flex: 1;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Quicksand", ui-rounded, sans-serif;
+    font-weight: 600;
     font-size: 12.5px;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
     padding: 9px 12px;
-    border-radius: 10px;
+    border-radius: 999px;
     border: 1px solid var(--line);
     background: var(--surface);
     color: var(--ink-soft);
@@ -216,9 +248,10 @@
   .tabs[hidden] { display: none; }
 
   .tab {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Quicksand", ui-rounded, sans-serif;
+    font-weight: 600;
     font-size: 12px;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     white-space: nowrap;
     padding: 7px 12px;
     border-radius: 999px;
@@ -259,16 +292,17 @@
   .area summary::-webkit-details-marker { display: none; }
 
   .area-title {
-    font-family: "Fraunces", Georgia, serif;
+    font-family: "Baloo 2", ui-rounded, "Segoe UI", sans-serif;
     font-size: 19px;
-    font-weight: 600;
+    font-weight: 700;
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
   .area-count {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Quicksand", ui-rounded, sans-serif;
+    font-weight: 600;
     font-size: 12px;
     color: var(--muted);
     font-variant-numeric: tabular-nums;
@@ -287,6 +321,14 @@
   @keyframes area-flash-anim {
     0% { background: rgba(111, 176, 163, 0.22); border-radius: 12px; }
     100% { background: transparent; }
+  }
+
+  .card.has-photo { animation: card-pop 0.4s ease; }
+
+  @keyframes card-pop {
+    0% { transform: scale(0.96); }
+    55% { transform: scale(1.015); }
+    100% { transform: scale(1); }
   }
 
   .cards {
@@ -343,16 +385,20 @@
   }
 
   .num {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Quicksand", ui-rounded, sans-serif;
+    font-weight: 700;
     font-size: 11px;
     color: var(--muted);
+    background: var(--surface-2);
+    padding: 2px 8px;
+    border-radius: 999px;
   }
 
-  .card.has-photo .num { color: rgba(255, 255, 255, 0.7); }
+  .card.has-photo .num { color: #f7f4ea; background: rgba(255, 255, 255, 0.18); }
 
   .name {
-    font-family: "Fraunces", Georgia, serif;
-    font-weight: 600;
+    font-family: "Baloo 2", ui-rounded, "Segoe UI", sans-serif;
+    font-weight: 700;
     font-size: 17px;
     color: var(--ink);
   }
@@ -422,9 +468,10 @@
   }
 
   .river-label {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Quicksand", ui-rounded, sans-serif;
+    font-weight: 600;
     font-size: 9px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     fill: var(--muted);
   }
 
@@ -442,16 +489,16 @@
   .map-pin:focus-visible { outline: none; }
 
   .pin-count {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Quicksand", ui-rounded, sans-serif;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     fill: var(--ink);
     font-variant-numeric: tabular-nums;
     pointer-events: none;
   }
 
   .pin-label {
-    font-family: "Fraunces", Georgia, serif;
+    font-family: "Baloo 2", ui-rounded, "Segoe UI", sans-serif;
     font-size: 11.5px;
     font-weight: 600;
     fill: var(--ink-soft);
@@ -479,23 +526,34 @@
   footer p { margin: 0 0 10px; }
 
   .reset-btn {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Quicksand", ui-rounded, sans-serif;
+    font-weight: 600;
     font-size: 11px;
     background: none;
     border: 1px solid var(--line);
     color: var(--muted);
-    padding: 6px 11px;
-    border-radius: 8px;
+    padding: 6px 13px;
+    border-radius: 999px;
     cursor: pointer;
   }
 
   .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   .empty {
-    padding: 30px 0;
+    padding: 30px 0 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
     color: var(--muted);
     font-size: 14px;
+  }
+
+  .mascot-empty {
+    width: 68px;
+    height: 68px;
+    margin-bottom: 10px;
+    transform: rotate(7deg);
   }
 
   .lightbox {
@@ -523,8 +581,33 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="eyebrow">Portland, OR &middot; Aug 7 &ndash; Nov 1, 2026</div>
-    <h1>Wildwood Crow Tracker</h1>
+    <div class="brand-row">
+      <div class="mascot mascot-header" aria-hidden="true">
+        <svg viewBox="0 0 100 100" role="img" aria-hidden="true">
+          <path fill="var(--ink)" d="M22 68 L8 80 L30 74 Z"/>
+          <circle fill="var(--ink)" cx="52" cy="56" r="28"/>
+          <ellipse fill="var(--ink)" stroke="var(--bg)" stroke-width="2" cx="74" cy="60" rx="13" ry="19" transform="rotate(-15 74 60)"/>
+          <path fill="var(--ink)" d="M42 30 L46 14 L50 30 Z"/>
+          <path fill="var(--ink)" d="M48 27 L53 8 L58 27 Z"/>
+          <path fill="var(--ink)" d="M56 30 L62 14 L66 30 Z"/>
+          <circle fill="var(--accent)" opacity="0.3" cx="34" cy="63" r="5"/>
+          <circle fill="var(--accent)" opacity="0.3" cx="72" cy="63" r="5"/>
+          <circle fill="var(--surface)" cx="42" cy="52" r="9"/>
+          <circle fill="var(--surface)" cx="64" cy="52" r="9"/>
+          <circle fill="var(--accent-2)" cx="42" cy="51" r="4.5"/>
+          <circle fill="var(--accent-2)" cx="64" cy="51" r="4.5"/>
+          <circle fill="var(--surface)" cx="44.5" cy="48.5" r="1.6"/>
+          <circle fill="var(--surface)" cx="66.5" cy="48.5" r="1.6"/>
+          <path fill="var(--accent)" d="M46 63 L52 72 L58 63 Z"/>
+          <path stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round" fill="none" d="M42 82 L42 90 M38 90 L46 90"/>
+          <path stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round" fill="none" d="M62 82 L62 90 M58 90 L66 90"/>
+        </svg>
+      </div>
+      <div>
+        <div class="eyebrow">Portland, OR &middot; Aug 7 &ndash; Nov 1, 2026</div>
+        <h1>Wildwood Crow Tracker</h1>
+      </div>
+    </div>
     <p class="sub">Thirty hand-painted crow sculptures are perched around Portland for LAIKA's <em>Wildwood</em> art trail. This is your personal, offline checklist for spotting them all.</p>
     <div class="progress-row">
       <span class="progress-count"><b id="foundNum">0</b> / 30 spotted</span>
@@ -555,6 +638,26 @@
 <div class="lightbox" id="lightbox" hidden><img id="lightboxImg" alt="Enlarged crow photo"></div>
 
 <script>
+  const MASCOT_SVG = `<svg viewBox="0 0 100 100" role="img" aria-hidden="true">
+    <path fill="var(--ink)" d="M22 68 L8 80 L30 74 Z"/>
+    <circle fill="var(--ink)" cx="52" cy="56" r="28"/>
+    <ellipse fill="var(--ink)" stroke="var(--bg)" stroke-width="2" cx="74" cy="60" rx="13" ry="19" transform="rotate(-15 74 60)"/>
+    <path fill="var(--ink)" d="M42 30 L46 14 L50 30 Z"/>
+    <path fill="var(--ink)" d="M48 27 L53 8 L58 27 Z"/>
+    <path fill="var(--ink)" d="M56 30 L62 14 L66 30 Z"/>
+    <circle fill="var(--accent)" opacity="0.3" cx="34" cy="63" r="5"/>
+    <circle fill="var(--accent)" opacity="0.3" cx="72" cy="63" r="5"/>
+    <circle fill="var(--surface)" cx="42" cy="52" r="9"/>
+    <circle fill="var(--surface)" cx="64" cy="52" r="9"/>
+    <circle fill="var(--accent-2)" cx="42" cy="51" r="4.5"/>
+    <circle fill="var(--accent-2)" cx="64" cy="51" r="4.5"/>
+    <circle fill="var(--surface)" cx="44.5" cy="48.5" r="1.6"/>
+    <circle fill="var(--surface)" cx="66.5" cy="48.5" r="1.6"/>
+    <path fill="var(--accent)" d="M46 63 L52 72 L58 63 Z"/>
+    <path stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round" fill="none" d="M42 82 L42 90 M38 90 L46 90"/>
+    <path stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round" fill="none" d="M62 82 L62 90 M58 90 L66 90"/>
+  </svg>`;
+
   const CROWS = [
     { id: 1, name: "Be Kind", artist: "Celeste Potgieter", location: "SW 5th Ave & Ankeny St", area: "Downtown core" },
     { id: 2, name: "Oregon Botanica", artist: "Emma van Halsema", location: "Main Street Plaza, next to Arlene Schnitzer Concert Hall", area: "Downtown core" },
@@ -831,7 +934,10 @@
     if (!anyVisible) {
       const empty = document.createElement("div");
       empty.className = "empty";
-      empty.textContent = "Nothing here yet — try a different filter.";
+      empty.innerHTML = `
+        <div class="mascot mascot-empty">${MASCOT_SVG}</div>
+        <p>Nothing here yet &mdash; try a different filter.</p>
+      `;
       areasEl.appendChild(empty);
     }
 
