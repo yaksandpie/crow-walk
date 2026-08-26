@@ -208,6 +208,25 @@
     transition: width 0.5s cubic-bezier(.4,1.4,.5,1);
   }
 
+  .share-btn {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    font-family: "Quicksand", ui-rounded, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: none;
+    background: var(--accent-2);
+    color: var(--accent-ink);
+    cursor: pointer;
+  }
+
+  .share-btn:hover { filter: brightness(1.06); }
+  .share-btn:disabled { opacity: 0.7; cursor: default; }
+
   .view-toggle {
     display: flex;
     gap: 6px;
@@ -576,6 +595,55 @@
     border-radius: 12px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
+
+  .share-preview {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 14, 10, 0.88);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 24px;
+    z-index: 50;
+  }
+
+  .share-preview[hidden] { display: none; }
+
+  .share-preview img {
+    max-width: min(100%, 320px);
+    max-height: 60vh;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .share-preview-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .share-preview-actions a,
+  .share-preview-actions button {
+    font-family: "Quicksand", ui-rounded, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .share-preview-actions a {
+    background: var(--accent-2);
+    color: var(--accent-ink);
+  }
+
+  .share-preview-actions button {
+    background: rgba(255, 255, 255, 0.12);
+    color: #f7f4ea;
+  }
 </style>
 </head>
 <body>
@@ -629,6 +697,7 @@
       <span class="progress-count" id="pctNum">0%</span>
     </div>
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <button class="share-btn" id="shareBtn">Share progress</button>
     <div class="view-toggle" role="tablist" aria-label="View">
       <button class="view-btn" data-view="list" aria-pressed="true">List</button>
       <button class="view-btn" data-view="map" aria-pressed="false">Map</button>
@@ -651,28 +720,54 @@
 
 <input type="file" id="photoInput" accept="image/*" style="display:none">
 <div class="lightbox" id="lightbox" hidden><img id="lightboxImg" alt="Enlarged crow photo"></div>
+<div class="share-preview" id="sharePreview" hidden>
+  <img id="sharePreviewImg" alt="Shareable progress card">
+  <div class="share-preview-actions">
+    <a id="sharePreviewDownload" download="wildwood-crow-tracker.png">Download image</a>
+    <button type="button" id="sharePreviewClose">Close</button>
+  </div>
+</div>
 
 <script>
+  const MASCOT_SHAPES = `
+    <path fill="#16201a" d="M22 68 L8 80 L30 74 Z"/>
+    <circle fill="#16201a" cx="52" cy="56" r="28"/>
+    <ellipse fill="#16201a" stroke="#ffffff" stroke-width="2" cx="80" cy="76" rx="8" ry="12" transform="rotate(-15 80 76)"/>
+    <path fill="#16201a" d="M42 30 L46 14 L50 30 Z"/>
+    <path fill="#16201a" d="M48 27 L53 8 L58 27 Z"/>
+    <path fill="#16201a" d="M56 30 L62 14 L66 30 Z"/>
+    <circle fill="#c97f1f" opacity="0.3" cx="34" cy="63" r="5"/>
+    <circle fill="#c97f1f" opacity="0.3" cx="72" cy="63" r="5"/>
+    <circle fill="#ffffff" cx="42" cy="52" r="9"/>
+    <circle fill="#ffffff" cx="64" cy="52" r="9"/>
+    <circle fill="#2f8577" cx="42" cy="51" r="4.5"/>
+    <circle fill="#2f8577" cx="64" cy="51" r="4.5"/>
+    <circle fill="#ffffff" cx="44.5" cy="48.5" r="1.6"/>
+    <circle fill="#ffffff" cx="66.5" cy="48.5" r="1.6"/>
+    <path fill="#c97f1f" d="M46 63 L52 72 L58 63 Z"/>
+    <path stroke="#c97f1f" stroke-width="3.2" stroke-linecap="round" fill="none" d="M42 82 L42 90 M38 90 L46 90"/>
+    <path stroke="#c97f1f" stroke-width="3.2" stroke-linecap="round" fill="none" d="M62 82 L62 90 M58 90 L66 90"/>
+  `;
+
   const MASCOT_SVG = `<svg viewBox="0 0 100 100" role="img" aria-hidden="true">
-    <g filter="url(#crow-outline)">
-      <path fill="#16201a" d="M22 68 L8 80 L30 74 Z"/>
-      <circle fill="#16201a" cx="52" cy="56" r="28"/>
-      <ellipse fill="#16201a" stroke="#ffffff" stroke-width="2" cx="80" cy="76" rx="8" ry="12" transform="rotate(-15 80 76)"/>
-      <path fill="#16201a" d="M42 30 L46 14 L50 30 Z"/>
-      <path fill="#16201a" d="M48 27 L53 8 L58 27 Z"/>
-      <path fill="#16201a" d="M56 30 L62 14 L66 30 Z"/>
-      <circle fill="#c97f1f" opacity="0.3" cx="34" cy="63" r="5"/>
-      <circle fill="#c97f1f" opacity="0.3" cx="72" cy="63" r="5"/>
-      <circle fill="#ffffff" cx="42" cy="52" r="9"/>
-      <circle fill="#ffffff" cx="64" cy="52" r="9"/>
-      <circle fill="#2f8577" cx="42" cy="51" r="4.5"/>
-      <circle fill="#2f8577" cx="64" cy="51" r="4.5"/>
-      <circle fill="#ffffff" cx="44.5" cy="48.5" r="1.6"/>
-      <circle fill="#ffffff" cx="66.5" cy="48.5" r="1.6"/>
-      <path fill="#c97f1f" d="M46 63 L52 72 L58 63 Z"/>
-      <path stroke="#c97f1f" stroke-width="3.2" stroke-linecap="round" fill="none" d="M42 82 L42 90 M38 90 L46 90"/>
-      <path stroke="#c97f1f" stroke-width="3.2" stroke-linecap="round" fill="none" d="M62 82 L62 90 M58 90 L66 90"/>
-    </g>
+    <g filter="url(#crow-outline)">${MASCOT_SHAPES}</g>
+  </svg>`;
+
+  // Self-contained (own <defs>/filter) so it can be rasterized off-page,
+  // e.g. as a data: URL image source for the share card canvas.
+  const MASCOT_SVG_STANDALONE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <defs>
+      <filter id="co" x="-30%" y="-30%" width="160%" height="160%">
+        <feMorphology in="SourceAlpha" operator="dilate" radius="2.5" result="dilated"/>
+        <feFlood flood-color="#ffffff" result="flood"/>
+        <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
+        <feMerge>
+          <feMergeNode in="outline"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <g filter="url(#co)">${MASCOT_SHAPES}</g>
   </svg>`;
 
   const CROWS = [
@@ -786,6 +881,194 @@
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
+  }
+
+  function loadImage(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    });
+  }
+
+  function roundRectPath(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // Fixed light palette, independent of the page's own theme, since this
+  // renders a static image with no theme context once shared.
+  const SHARE_PALETTE = {
+    bg: "#eef0e6", surface: "#ffffff", surface2: "#e3e7da",
+    ink: "#16201a", inkSoft: "#384335", muted: "#5b6b58",
+    accent: "#c97f1f", accent2: "#2f8577", accentInk: "#fff7ea",
+  };
+
+  async function buildShareCard() {
+    const W = 1080, H = 1350, pad = 56;
+    const canvas = document.createElement("canvas");
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext("2d");
+    const P = SHARE_PALETTE;
+
+    const total = CROWS.length;
+    const spottedCrows = CROWS.filter(c => hasPhoto(c.id));
+    const foundCount = spottedCrows.length;
+    const complete = foundCount === total;
+    const pct = Math.round((foundCount / total) * 100);
+
+    await Promise.all([
+      document.fonts.load('700 96px "Baloo 2"'),
+      document.fonts.load('700 40px "Baloo 2"'),
+      document.fonts.load('700 26px "Quicksand"'),
+      document.fonts.load('600 26px "Quicksand"'),
+      document.fonts.load('600 30px "Quicksand"'),
+    ]);
+
+    ctx.fillStyle = P.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    roundRectPath(ctx, pad, pad, W - pad * 2, H - pad * 2, 48);
+    ctx.fillStyle = P.surface;
+    ctx.fill();
+
+    if (complete) {
+      [[150, 150, 10, P.accent], [940, 130, 8, P.accent2], [880, 210, 11, P.accent],
+       [170, 240, 8, P.accent2], [520, 100, 9, P.accent], [740, 170, 7, P.accent2]]
+        .forEach(([x, y, r, color]) => {
+          ctx.globalAlpha = 0.45;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        });
+    }
+
+    const mascotImg = await loadImage("data:image/svg+xml;charset=utf-8," + encodeURIComponent(MASCOT_SVG_STANDALONE));
+    const mascotSize = 120;
+    const contentX = pad + 40;
+    ctx.drawImage(mascotImg, contentX, pad + 50, mascotSize, mascotSize);
+
+    ctx.fillStyle = P.accent2;
+    ctx.font = '700 26px "Quicksand", sans-serif';
+    ctx.fillText("WILDWOOD CROW TRACKER", contentX + mascotSize + 24, pad + 100);
+    ctx.fillStyle = P.muted;
+    ctx.font = '600 22px "Quicksand", sans-serif';
+    ctx.fillText("Portland, OR · Aug 7 – Nov 1, 2026", contentX + mascotSize + 24, pad + 136);
+
+    const statY = pad + 260;
+    ctx.fillStyle = P.ink;
+    ctx.font = '700 96px "Baloo 2", sans-serif';
+    ctx.fillText(`${foundCount} / ${total}`, contentX, statY);
+
+    ctx.font = '700 40px "Baloo 2", sans-serif';
+    ctx.fillStyle = P.accent2;
+    ctx.fillText(complete ? "ALL SPOTTED! \u{1F389}" : "CROWS SPOTTED", contentX, statY + 56);
+
+    const barX = contentX, barY = statY + 100, barH = 26, barW = W - pad * 2 - 80;
+    roundRectPath(ctx, barX, barY, barW, barH, barH / 2);
+    ctx.fillStyle = P.surface2;
+    ctx.fill();
+    const fillW = Math.max(barH, barW * (foundCount / total));
+    roundRectPath(ctx, barX, barY, fillW, barH, barH / 2);
+    const grad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
+    grad.addColorStop(0, P.accent2);
+    grad.addColorStop(1, P.accent);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    ctx.fillStyle = P.inkSoft;
+    ctx.font = '600 26px "Quicksand", sans-serif';
+    ctx.textAlign = "right";
+    ctx.fillText(pct + "%", barX + barW, barY - 14);
+    ctx.textAlign = "left";
+
+    const gridY = barY + 70;
+    const gridBottom = H - pad - 90;
+    const thumbs = spottedCrows.slice(0, 9);
+
+    if (thumbs.length > 0) {
+      const cols = 3, gap = 16;
+      const cellW = (barW - gap * (cols - 1)) / cols;
+      const rows = Math.ceil(thumbs.length / cols);
+      const cellH = Math.min(cellW, (gridBottom - gridY - gap * (rows - 1)) / rows);
+      const gridH = rows * cellH + (rows - 1) * gap;
+      const gridTop = gridY + Math.max(0, (gridBottom - gridY - gridH) / 2);
+      for (let i = 0; i < thumbs.length; i++) {
+        const col = i % cols, row = Math.floor(i / cols);
+        const x = barX + col * (cellW + gap);
+        const y = gridTop + row * (cellH + gap);
+        const img = await loadImage(photos[thumbs[i].id].url);
+        ctx.save();
+        roundRectPath(ctx, x, y, cellW, cellH, 20);
+        ctx.clip();
+        const scale = Math.max(cellW / img.width, cellH / img.height);
+        const dw = img.width * scale, dh = img.height * scale;
+        ctx.drawImage(img, x + (cellW - dw) / 2, y + (cellH - dh) / 2, dw, dh);
+        ctx.restore();
+      }
+    } else {
+      ctx.fillStyle = P.muted;
+      ctx.font = '600 30px "Quicksand", sans-serif';
+      ctx.textAlign = "center";
+      ctx.fillText("Just getting started!", W / 2, (gridY + gridBottom) / 2);
+      ctx.textAlign = "left";
+    }
+
+    ctx.fillStyle = P.muted;
+    ctx.font = '600 22px "Quicksand", sans-serif';
+    ctx.textAlign = "center";
+    ctx.fillText("Follow the Crows · a LAIKA art trail", W / 2, H - pad - 30);
+    ctx.textAlign = "left";
+
+    return new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+  }
+
+  let sharePreviewUrl = null;
+
+  function openSharePreview(blob) {
+    if (sharePreviewUrl) URL.revokeObjectURL(sharePreviewUrl);
+    sharePreviewUrl = URL.createObjectURL(blob);
+    document.getElementById("sharePreviewImg").src = sharePreviewUrl;
+    document.getElementById("sharePreviewDownload").href = sharePreviewUrl;
+    document.getElementById("sharePreview").hidden = false;
+  }
+
+  async function shareProgress() {
+    const btn = document.getElementById("shareBtn");
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Preparing…";
+    try {
+      const blob = await buildShareCard();
+      const file = new File([blob], "wildwood-crow-tracker.png", { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: "Wildwood Crow Tracker",
+            text: "Tracking my Wildwood crow hunt in Portland!",
+          });
+          return;
+        } catch (err) {
+          if (err && err.name === "AbortError") return;
+        }
+      }
+      openSharePreview(blob);
+    } catch (err) {
+      alert("Couldn't create the share image — try again.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
   }
 
   let photos = {};
@@ -1009,6 +1292,11 @@
   }
   document.getElementById("lightbox").addEventListener("click", () => {
     document.getElementById("lightbox").hidden = true;
+  });
+
+  document.getElementById("shareBtn").addEventListener("click", shareProgress);
+  document.getElementById("sharePreviewClose").addEventListener("click", () => {
+    document.getElementById("sharePreview").hidden = true;
   });
 
   document.querySelectorAll(".tab").forEach(tab => {
