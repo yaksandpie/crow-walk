@@ -211,7 +211,7 @@
   .share-btn {
     display: block;
     width: 100%;
-    margin-top: 10px;
+    margin: 0 0 16px;
     font-family: "Quicksand", ui-rounded, sans-serif;
     font-weight: 700;
     font-size: 13px;
@@ -697,7 +697,6 @@
       <span class="progress-count" id="pctNum">0%</span>
     </div>
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    <button class="share-btn" id="shareBtn">Share progress</button>
     <div class="view-toggle" role="tablist" aria-label="View">
       <button class="view-btn" data-view="list" aria-pressed="true">List</button>
       <button class="view-btn" data-view="map" aria-pressed="false">Map</button>
@@ -713,6 +712,7 @@
   <div id="mapView" hidden></div>
 
   <footer>
+    <button class="share-btn" id="shareBtn">Share progress</button>
     <p><strong>About this data:</strong> All 30 titles, artists and locations come straight from the official <em>Wildwood: Follow the Crows</em> <a href="https://ohsufoundation.org/wp-content/uploads/2026/08/2026_DCH_LAIKA_Wildwood-Art-Trail-Map_UPDATED_Web.pdf" target="_blank" rel="noopener">trail map PDF</a> (OHSU Foundation, Aug 2026). A crow counts as spotted the moment you add a photo of it. Your photos save automatically &mdash; but only to this browser, on this device. They won't follow you to another phone or browser, and clearing site data will erase them, so nothing here is backed up.</p>
     <button class="reset-btn" id="resetBtn">Reset all progress</button>
   </footer>
