@@ -45,8 +45,6 @@
       --accent: #e8a33d;
       --accent-ink: #201202;
       --accent-2: #6cc0ae;
-      --crow-eye: #6b4226;
-      --crow-eye-base: var(--ink);
       --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
     }
   }
@@ -62,8 +60,6 @@
     --accent: #e8a33d;
     --accent-ink: #201202;
     --accent-2: #6cc0ae;
-    --crow-eye: #6b4226;
-    --crow-eye-base: var(--ink);
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
   }
 
@@ -583,28 +579,43 @@
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="crow-outline" x="-30%" y="-30%" width="160%" height="160%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="2.5" result="dilated"/>
+      <feFlood flood-color="#ffffff" result="flood"/>
+      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
+      <feMerge>
+        <feMergeNode in="outline"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>
 <div class="wrap">
   <header>
     <div class="brand-row">
       <div class="mascot mascot-header" aria-hidden="true">
         <svg viewBox="0 0 100 100" role="img" aria-hidden="true">
-          <path fill="var(--ink)" d="M22 68 L8 80 L30 74 Z"/>
-          <circle fill="var(--ink)" cx="52" cy="56" r="28"/>
-          <ellipse fill="var(--ink)" stroke="var(--bg)" stroke-width="2" cx="80" cy="76" rx="8" ry="12" transform="rotate(-15 80 76)"/>
-          <path fill="var(--ink)" d="M42 30 L46 14 L50 30 Z"/>
-          <path fill="var(--ink)" d="M48 27 L53 8 L58 27 Z"/>
-          <path fill="var(--ink)" d="M56 30 L62 14 L66 30 Z"/>
-          <circle fill="var(--accent)" opacity="0.3" cx="34" cy="63" r="5"/>
-          <circle fill="var(--accent)" opacity="0.3" cx="72" cy="63" r="5"/>
-          <circle fill="var(--crow-eye-base, var(--surface))" cx="42" cy="52" r="9"/>
-          <circle fill="var(--crow-eye-base, var(--surface))" cx="64" cy="52" r="9"/>
-          <circle fill="var(--crow-eye, var(--accent-2))" cx="42" cy="51" r="4.5"/>
-          <circle fill="var(--crow-eye, var(--accent-2))" cx="64" cy="51" r="4.5"/>
-          <circle fill="var(--surface)" cx="44.5" cy="48.5" r="1.6"/>
-          <circle fill="var(--surface)" cx="66.5" cy="48.5" r="1.6"/>
-          <path fill="var(--accent)" d="M46 63 L52 72 L58 63 Z"/>
-          <path stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round" fill="none" d="M42 82 L42 90 M38 90 L46 90"/>
-          <path stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round" fill="none" d="M62 82 L62 90 M58 90 L66 90"/>
+          <g filter="url(#crow-outline)">
+            <path fill="#16201a" d="M22 68 L8 80 L30 74 Z"/>
+            <circle fill="#16201a" cx="52" cy="56" r="28"/>
+            <ellipse fill="#16201a" stroke="#ffffff" stroke-width="2" cx="80" cy="76" rx="8" ry="12" transform="rotate(-15 80 76)"/>
+            <path fill="#16201a" d="M42 30 L46 14 L50 30 Z"/>
+            <path fill="#16201a" d="M48 27 L53 8 L58 27 Z"/>
+            <path fill="#16201a" d="M56 30 L62 14 L66 30 Z"/>
+            <circle fill="#c97f1f" opacity="0.3" cx="34" cy="63" r="5"/>
+            <circle fill="#c97f1f" opacity="0.3" cx="72" cy="63" r="5"/>
+            <circle fill="#ffffff" cx="42" cy="52" r="9"/>
+            <circle fill="#ffffff" cx="64" cy="52" r="9"/>
+            <circle fill="#2f8577" cx="42" cy="51" r="4.5"/>
+            <circle fill="#2f8577" cx="64" cy="51" r="4.5"/>
+            <circle fill="#ffffff" cx="44.5" cy="48.5" r="1.6"/>
+            <circle fill="#ffffff" cx="66.5" cy="48.5" r="1.6"/>
+            <path fill="#c97f1f" d="M46 63 L52 72 L58 63 Z"/>
+            <path stroke="#c97f1f" stroke-width="3.2" stroke-linecap="round" fill="none" d="M42 82 L42 90 M38 90 L46 90"/>
+            <path stroke="#c97f1f" stroke-width="3.2" stroke-linecap="round" fill="none" d="M62 82 L62 90 M58 90 L66 90"/>
+          </g>
         </svg>
       </div>
       <div>
@@ -643,23 +654,25 @@
 
 <script>
   const MASCOT_SVG = `<svg viewBox="0 0 100 100" role="img" aria-hidden="true">
-    <path fill="var(--ink)" d="M22 68 L8 80 L30 74 Z"/>
-    <circle fill="var(--ink)" cx="52" cy="56" r="28"/>
-    <ellipse fill="var(--ink)" stroke="var(--bg)" stroke-width="2" cx="80" cy="76" rx="8" ry="12" transform="rotate(-15 80 76)"/>
-    <path fill="var(--ink)" d="M42 30 L46 14 L50 30 Z"/>
-    <path fill="var(--ink)" d="M48 27 L53 8 L58 27 Z"/>
-    <path fill="var(--ink)" d="M56 30 L62 14 L66 30 Z"/>
-    <circle fill="var(--accent)" opacity="0.3" cx="34" cy="63" r="5"/>
-    <circle fill="var(--accent)" opacity="0.3" cx="72" cy="63" r="5"/>
-    <circle fill="var(--crow-eye-base, var(--surface))" cx="42" cy="52" r="9"/>
-    <circle fill="var(--crow-eye-base, var(--surface))" cx="64" cy="52" r="9"/>
-    <circle fill="var(--crow-eye, var(--accent-2))" cx="42" cy="51" r="4.5"/>
-    <circle fill="var(--crow-eye, var(--accent-2))" cx="64" cy="51" r="4.5"/>
-    <circle fill="var(--surface)" cx="44.5" cy="48.5" r="1.6"/>
-    <circle fill="var(--surface)" cx="66.5" cy="48.5" r="1.6"/>
-    <path fill="var(--accent)" d="M46 63 L52 72 L58 63 Z"/>
-    <path stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round" fill="none" d="M42 82 L42 90 M38 90 L46 90"/>
-    <path stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round" fill="none" d="M62 82 L62 90 M58 90 L66 90"/>
+    <g filter="url(#crow-outline)">
+      <path fill="#16201a" d="M22 68 L8 80 L30 74 Z"/>
+      <circle fill="#16201a" cx="52" cy="56" r="28"/>
+      <ellipse fill="#16201a" stroke="#ffffff" stroke-width="2" cx="80" cy="76" rx="8" ry="12" transform="rotate(-15 80 76)"/>
+      <path fill="#16201a" d="M42 30 L46 14 L50 30 Z"/>
+      <path fill="#16201a" d="M48 27 L53 8 L58 27 Z"/>
+      <path fill="#16201a" d="M56 30 L62 14 L66 30 Z"/>
+      <circle fill="#c97f1f" opacity="0.3" cx="34" cy="63" r="5"/>
+      <circle fill="#c97f1f" opacity="0.3" cx="72" cy="63" r="5"/>
+      <circle fill="#ffffff" cx="42" cy="52" r="9"/>
+      <circle fill="#ffffff" cx="64" cy="52" r="9"/>
+      <circle fill="#2f8577" cx="42" cy="51" r="4.5"/>
+      <circle fill="#2f8577" cx="64" cy="51" r="4.5"/>
+      <circle fill="#ffffff" cx="44.5" cy="48.5" r="1.6"/>
+      <circle fill="#ffffff" cx="66.5" cy="48.5" r="1.6"/>
+      <path fill="#c97f1f" d="M46 63 L52 72 L58 63 Z"/>
+      <path stroke="#c97f1f" stroke-width="3.2" stroke-linecap="round" fill="none" d="M42 82 L42 90 M38 90 L46 90"/>
+      <path stroke="#c97f1f" stroke-width="3.2" stroke-linecap="round" fill="none" d="M62 82 L62 90 M58 90 L66 90"/>
+    </g>
   </svg>`;
 
   const CROWS = [
