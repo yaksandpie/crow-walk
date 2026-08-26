@@ -406,41 +406,57 @@
 
   #mapView[hidden], #areas[hidden] { display: none; }
 
-  #googleMap {
+  .map-svg {
     width: 100%;
-    height: 62vh;
-    min-height: 380px;
-    max-height: 620px;
+    height: auto;
+    display: block;
     margin-top: 22px;
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-    overflow: hidden;
-    background: var(--surface-2);
   }
 
-  .map-legend {
-    display: flex;
-    gap: 18px;
-    margin-top: 10px;
-    font-size: 12.5px;
-    color: var(--ink-soft);
+  .river {
+    fill: none;
+    stroke: #6f9fc4;
+    stroke-width: 22;
+    stroke-linecap: round;
+    opacity: 0.32;
   }
 
-  .map-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  .river-label {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    fill: var(--muted);
   }
 
-  .map-legend-dot {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    flex-shrink: 0;
+  .map-pin { cursor: pointer; }
+
+  .map-pin circle {
+    transition: fill-opacity 0.3s ease, stroke-width 0.15s ease;
   }
 
-  .map-legend-dot.spotted { background: var(--accent-2); }
-  .map-legend-dot.unspotted { background: var(--surface); border: 2px solid var(--accent-2); }
+  .map-pin:hover circle,
+  .map-pin:focus-visible circle {
+    stroke-width: 3;
+  }
+
+  .map-pin:focus-visible { outline: none; }
+
+  .pin-count {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--ink);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+
+  .pin-label {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    fill: var(--ink-soft);
+    pointer-events: none;
+  }
 
   .map-note {
     margin-top: 6px;
@@ -448,27 +464,6 @@
     color: var(--muted);
     text-align: center;
   }
-
-  .map-key-missing {
-    margin-top: 22px;
-    padding: 20px 18px;
-    border: 1px dashed var(--line);
-    border-radius: var(--radius);
-    background: var(--surface);
-    color: var(--ink-soft);
-    font-size: 13.5px;
-    line-height: 1.6;
-  }
-
-  .map-key-missing code {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
-    font-size: 12px;
-    background: var(--surface-2);
-    padding: 1px 5px;
-    border-radius: 4px;
-  }
-
-  .card-flash { animation: area-flash-anim 1.2s ease; }
 
   /* ---------- Footer ---------- */
 
@@ -560,46 +555,38 @@
 <div class="lightbox" id="lightbox" hidden><img id="lightboxImg" alt="Enlarged crow photo"></div>
 
 <script>
-  // Coordinates are hand-compiled from Portland's street grid and public address
-  // lookups (not a geocoding API), so treat them as close-enough for a city-wide
-  // pin map rather than survey-accurate. Nudge any lat/lng below if a pin looks off.
   const CROWS = [
-    { id: 1, name: "Be Kind", artist: "Celeste Potgieter", location: "SW 5th Ave & Ankeny St", area: "Downtown core", lat: 45.5232, lng: -122.6737 },
-    { id: 2, name: "Oregon Botanica", artist: "Emma van Halsema", location: "Main Street Plaza, next to Arlene Schnitzer Concert Hall", area: "Downtown core", lat: 45.5165, lng: -122.6803 },
-    { id: 3, name: "Paul Birdyan", artist: "Michael Buchino", location: "Pride Plaza, SW Harvey Milk St", area: "Downtown core", lat: 45.5192, lng: -122.6845 },
-    { id: 4, name: "Bloom", artist: "Victoria Smith", location: "Portland Art Museum, East Plaza", area: "Downtown core", lat: 45.5157, lng: -122.6822 },
-    { id: 5, name: "Flying Fields Forever", artist: "Sue-Del McCulloch", location: "Director Park", area: "Downtown core", lat: 45.5183, lng: -122.6812 },
-    { id: 6, name: "Overgrowth", artist: "Rae Sheridan", location: "Pioneer Courthouse Square", area: "Downtown core", lat: 45.5189, lng: -122.6788 },
-    { id: 7, name: "On a Mission", artist: "Nelson Lowry", location: "Pittock Mansion", area: "Forest Park — Wildwood sequence", lat: 45.5252, lng: -122.7160 },
-    { id: 8, name: "As the Crow Flies", artist: "Jordan Mason", location: "Central Library", area: "Downtown core", lat: 45.5180, lng: -122.6822 },
-    { id: 9, name: "Feather and Flowers", artist: "Sam Warford", location: "South Park Blocks / Farmer's Market", area: "Downtown core", lat: 45.5090, lng: -122.6845 },
-    { id: 10, name: "Ravel", artist: "Reshidev RK", location: "NW 13th Ave & NW Everett St", area: "Pearl District", lat: 45.5296, lng: -122.6835 },
-    { id: 11, name: "Heart of the Forest", artist: "Ana the Artist", location: "Bird Alliance of Oregon", area: "Forest Park — Wildwood sequence", lat: 45.5258, lng: -122.6921 },
-    { id: 12, name: "Stash", artist: "Stephanie Hower Derheimer", location: "OHSU Knight Cancer Research Building", area: "South Waterfront", lat: 45.4991, lng: -122.6707 },
-    { id: 13, name: "Back Alley Flora", artist: "Ruben Lancaster", location: "Albina Vision Trust, N Williams Ave", area: "North / Northeast", lat: 45.5411, lng: -122.6660 },
-    { id: 14, name: "Iridescence", artist: "Daisy Nolz", location: "Saturday Market, Tom McCall Waterfront Park", area: "Waterfront Park", lat: 45.5228, lng: -122.6698 },
-    { id: 15, name: "A Murder Huddle", artist: "Allison McClay", location: "OMSI", area: "Central Eastside", lat: 45.5079, lng: -122.6656 },
-    { id: 16, name: "Mirrorball Messenger", artist: "Isi Matasavage", location: "Darcelle XV Plaza", area: "Downtown core", lat: 45.5192, lng: -122.6775 },
-    { id: 17, name: "Sakura Hanami", artist: "Maya McDarragh", location: "City Hall", area: "Downtown core", lat: 45.5150, lng: -122.6765 },
-    { id: 18, name: "A Crow of a Different Color", artist: "Mike Bennett", location: "Lincoln High School", area: "Downtown core", lat: 45.5168, lng: -122.6924 },
-    { id: 19, name: "DUSK", artist: "KSRA", location: "Tom McCall Waterfront Park, SW Clay St", area: "Waterfront Park", lat: 45.5150, lng: -122.6706 },
-    { id: 20, name: "Emergence", artist: "Olivia Mount", location: "Tom McCall Waterfront Park, Salmon Springs", area: "Waterfront Park", lat: 45.5172, lng: -122.6705 },
-    { id: 21, name: "The Shape of Us", artist: "Tristan ‘TK’ Irving", location: "Pod Plaza", area: "Pearl District", lat: 45.5300, lng: -122.6825 },
-    { id: 22, name: "Sir Timber Cawthorne", artist: "Lizzie Keenan", location: "International Rose Test Garden", area: "Forest Park — Wildwood sequence", lat: 45.5202, lng: -122.7078 },
-    { id: 23, name: "Do-nuts for Portland", artist: "Julianne Zane", location: "Ankeny Alley", area: "Old Town / Chinatown", lat: 45.5233, lng: -122.6720 },
-    { id: 24, name: "Kindred Spirits", artist: "Lil Hobbit Cosmonaut", location: "Keller Fountain", area: "Downtown core", lat: 45.5144, lng: -122.6746 },
-    { id: 25, name: "Freak’n Crow", artist: "Freaky Footwear", location: "Jamison Square", area: "Pearl District", lat: 45.5306, lng: -122.6821 },
-    { id: 26, name: "Sir Chester", artist: "Nina Oberlin", location: "Lan Su Chinese Garden", area: "Old Town / Chinatown", lat: 45.5257, lng: -122.6725 },
-    { id: 27, name: "Vuela Corazón", artist: "Christian Tellez Garcia", location: "North Park Blocks", area: "Old Town / Chinatown", lat: 45.5265, lng: -122.6789 },
-    { id: 28, name: "Midnight Crow", artist: "Amanda Burns", location: "Couch Park", area: "NW / Alphabet District", lat: 45.5286, lng: -122.6957 },
-    { id: 29, name: "Watercolor Crow", artist: "Rose Jubb", location: "Yamhill Pedestrian Plaza", area: "Downtown core", lat: 45.5205, lng: -122.6720 },
-    { id: 30, name: "The World of Wildwood", artist: "Carson Ellis", location: "St. Johns Library", area: "St. Johns", lat: 45.5887, lng: -122.7538 },
+    { id: 1, name: "Be Kind", artist: "Celeste Potgieter", location: "SW 5th Ave & Ankeny St", area: "Downtown core" },
+    { id: 2, name: "Oregon Botanica", artist: "Emma van Halsema", location: "Main Street Plaza, next to Arlene Schnitzer Concert Hall", area: "Downtown core" },
+    { id: 3, name: "Paul Birdyan", artist: "Michael Buchino", location: "Pride Plaza, SW Harvey Milk St", area: "Downtown core" },
+    { id: 4, name: "Bloom", artist: "Victoria Smith", location: "Portland Art Museum, East Plaza", area: "Downtown core" },
+    { id: 5, name: "Flying Fields Forever", artist: "Sue-Del McCulloch", location: "Director Park", area: "Downtown core" },
+    { id: 6, name: "Overgrowth", artist: "Rae Sheridan", location: "Pioneer Courthouse Square", area: "Downtown core" },
+    { id: 7, name: "On a Mission", artist: "Nelson Lowry", location: "Pittock Mansion", area: "Forest Park — Wildwood sequence" },
+    { id: 8, name: "As the Crow Flies", artist: "Jordan Mason", location: "Central Library", area: "Downtown core" },
+    { id: 9, name: "Feather and Flowers", artist: "Sam Warford", location: "South Park Blocks / Farmer's Market", area: "Downtown core" },
+    { id: 10, name: "Ravel", artist: "Reshidev RK", location: "NW 13th Ave & NW Everett St", area: "Pearl District" },
+    { id: 11, name: "Heart of the Forest", artist: "Ana the Artist", location: "Bird Alliance of Oregon", area: "Forest Park — Wildwood sequence" },
+    { id: 12, name: "Stash", artist: "Stephanie Hower Derheimer", location: "OHSU Knight Cancer Research Building", area: "South Waterfront" },
+    { id: 13, name: "Back Alley Flora", artist: "Ruben Lancaster", location: "Albina Vision Trust, N Williams Ave", area: "North / Northeast" },
+    { id: 14, name: "Iridescence", artist: "Daisy Nolz", location: "Saturday Market, Tom McCall Waterfront Park", area: "Waterfront Park" },
+    { id: 15, name: "A Murder Huddle", artist: "Allison McClay", location: "OMSI", area: "Central Eastside" },
+    { id: 16, name: "Mirrorball Messenger", artist: "Isi Matasavage", location: "Darcelle XV Plaza", area: "Downtown core" },
+    { id: 17, name: "Sakura Hanami", artist: "Maya McDarragh", location: "City Hall", area: "Downtown core" },
+    { id: 18, name: "A Crow of a Different Color", artist: "Mike Bennett", location: "Lincoln High School", area: "Downtown core" },
+    { id: 19, name: "DUSK", artist: "KSRA", location: "Tom McCall Waterfront Park, SW Clay St", area: "Waterfront Park" },
+    { id: 20, name: "Emergence", artist: "Olivia Mount", location: "Tom McCall Waterfront Park, Salmon Springs", area: "Waterfront Park" },
+    { id: 21, name: "The Shape of Us", artist: "Tristan ‘TK’ Irving", location: "Pod Plaza", area: "Pearl District" },
+    { id: 22, name: "Sir Timber Cawthorne", artist: "Lizzie Keenan", location: "International Rose Test Garden", area: "Forest Park — Wildwood sequence" },
+    { id: 23, name: "Do-nuts for Portland", artist: "Julianne Zane", location: "Ankeny Alley", area: "Old Town / Chinatown" },
+    { id: 24, name: "Kindred Spirits", artist: "Lil Hobbit Cosmonaut", location: "Keller Fountain", area: "Downtown core" },
+    { id: 25, name: "Freak’n Crow", artist: "Freaky Footwear", location: "Jamison Square", area: "Pearl District" },
+    { id: 26, name: "Sir Chester", artist: "Nina Oberlin", location: "Lan Su Chinese Garden", area: "Old Town / Chinatown" },
+    { id: 27, name: "Vuela Corazón", artist: "Christian Tellez Garcia", location: "North Park Blocks", area: "Old Town / Chinatown" },
+    { id: 28, name: "Midnight Crow", artist: "Amanda Burns", location: "Couch Park", area: "NW / Alphabet District" },
+    { id: 29, name: "Watercolor Crow", artist: "Rose Jubb", location: "Yamhill Pedestrian Plaza", area: "Downtown core" },
+    { id: 30, name: "The World of Wildwood", artist: "Carson Ellis", location: "St. Johns Library", area: "St. Johns" },
   ];
-
-  // From console.cloud.google.com — restrict this key to the "Maps JavaScript API"
-  // and to your site's domain (HTTP referrers) once it's live; it's safe to ship
-  // in client code, but only after that restriction is set.
-  const GOOGLE_MAPS_API_KEY = "AIzaSyAcaEklLQkBBMC3f97-aqNPFyjYoax-3fKs";
 
   const DB_NAME = "wildwood-crow-photos";
   const STORE_NAME = "photos";
@@ -694,131 +681,63 @@
     return seen;
   }
 
-  let mapInstance = null;
-  let mapInfoWindow = null;
-  let mapMarkersById = {};
-  let mapLoadPromise = null;
-  let crowCardElements = {};
+  const AREA_POS = {
+    "St. Johns": { x: 100, y: 36, label: "St. Johns" },
+    "Forest Park — Wildwood sequence": { x: 50, y: 130, label: "Forest Park" },
+    "NW / Alphabet District": { x: 55, y: 230, label: "NW District" },
+    "Pearl District": { x: 140, y: 185, label: "Pearl District" },
+    "North / Northeast": { x: 250, y: 165, label: "N/NE Portland" },
+    "Old Town / Chinatown": { x: 150, y: 270, label: "Old Town" },
+    "Downtown core": { x: 135, y: 365, label: "Downtown" },
+    "Waterfront Park": { x: 205, y: 340, label: "Waterfront" },
+    "Central Eastside": { x: 258, y: 330, label: "Eastside (OMSI)" },
+    "South Waterfront": { x: 165, y: 465, label: "S. Waterfront" },
+  };
 
-  function loadGoogleMapsScript() {
-    if (mapLoadPromise) return mapLoadPromise;
-    mapLoadPromise = new Promise((resolve, reject) => {
-      window.__onGoogleMapsLoaded = resolve;
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_MAPS_API_KEY)}&callback=__onGoogleMapsLoaded&loading=async&v=weekly`;
-      script.async = true;
-      script.onerror = () => reject(new Error("Google Maps script failed to load"));
-      document.head.appendChild(script);
-    });
-    return mapLoadPromise;
+  function areaStats(area) {
+    const inArea = CROWS.filter(c => c.area === area);
+    return { total: inArea.length, spotted: inArea.filter(c => hasPhoto(c.id)).length };
   }
 
-  async function ensureMap() {
+  function renderMap() {
     const mapEl = document.getElementById("mapView");
+    const pins = areaOrder().map(area => {
+      const info = AREA_POS[area];
+      if (!info) return "";
+      const { total, spotted } = areaStats(area);
+      const r = 15 + Math.min(total, 13) * 1.6;
+      const frac = total ? spotted / total : 0;
+      const fillOpacity = (0.12 + 0.78 * frac).toFixed(2);
+      return `
+        <g class="map-pin" data-action="jump-area" data-area="${escapeHtml(area)}" role="button" tabindex="0" aria-label="${escapeHtml(info.label)}: ${spotted} of ${total} spotted">
+          <circle cx="${info.x}" cy="${info.y}" r="${r}" fill="var(--accent-2)" fill-opacity="${fillOpacity}" stroke="var(--accent-2)" stroke-width="2" />
+          <text x="${info.x}" y="${info.y + 4}" text-anchor="middle" class="pin-count">${spotted}/${total}</text>
+          <text x="${info.x}" y="${info.y + r + 15}" text-anchor="middle" class="pin-label">${escapeHtml(info.label)}</text>
+        </g>
+      `;
+    }).join("");
 
-    if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === "YOUR_GOOGLE_MAPS_API_KEY") {
-      mapEl.innerHTML = `<div class="map-key-missing">No Google Maps API key is set yet. Create one at
-        <a href="https://console.cloud.google.com/google/maps-apis" target="_blank" rel="noopener">console.cloud.google.com</a>,
-        enable the <strong>Maps JavaScript API</strong>, and paste it into <code>GOOGLE_MAPS_API_KEY</code> near the top of the
-        <code>&lt;script&gt;</code> in index.html.</div>`;
-      return;
-    }
-
-    if (mapInstance) {
-      google.maps.event.trigger(mapInstance, "resize");
-      syncMapMarkers();
-      return;
-    }
-
-    mapEl.innerHTML = `<div id="googleMap" role="application" aria-label="Map of crow sculpture locations"></div>
-      <div class="map-legend">
-        <span class="map-legend-item"><span class="map-legend-dot spotted"></span>Spotted</span>
-        <span class="map-legend-item"><span class="map-legend-dot unspotted"></span>Still hunting</span>
-      </div>
-      <p class="map-note">Tap a pin for details, or "Show in list" to jump to its card.</p>`;
-
-    try {
-      await loadGoogleMapsScript();
-    } catch (e) {
-      mapEl.innerHTML = `<div class="map-key-missing">Couldn't load Google Maps. Check that the API key in
-        <code>GOOGLE_MAPS_API_KEY</code> is valid and that the Maps JavaScript API is enabled for it.</div>`;
-      return;
-    }
-
-    mapInstance = new google.maps.Map(document.getElementById("googleMap"), {
-      center: { lat: 45.5231, lng: -122.6765 },
-      zoom: 12.5,
-      streetViewControl: false,
-      mapTypeControl: false,
-      fullscreenControl: false,
-    });
-    mapInfoWindow = new google.maps.InfoWindow();
-    syncMapMarkers();
+    mapEl.innerHTML = `
+      <svg viewBox="0 0 320 600" class="map-svg" role="img" aria-label="Schematic map of Portland showing crow clusters by neighborhood">
+        <path d="M210,0 C190,80 225,150 200,220 C180,270 220,300 205,380 C195,430 215,470 205,600" class="river" />
+        <text x="222" y="500" class="river-label" transform="rotate(-8 222 500)">Willamette River</text>
+        ${pins}
+      </svg>
+      <p class="map-note">Schematic layout, not to scale &mdash; tap a cluster to jump to it in the list.</p>
+    `;
   }
 
-  function markerIcon(spotted) {
-    return {
-      path: google.maps.SymbolPath.CIRCLE,
-      scale: 9,
-      fillColor: "#2f8577",
-      fillOpacity: spotted ? 1 : 0,
-      strokeColor: "#2f8577",
-      strokeWeight: 2.5,
-    };
-  }
-
-  function syncMapMarkers() {
-    if (!mapInstance) return;
-    CROWS.forEach(crow => {
-      const spotted = hasPhoto(crow.id);
-      let marker = mapMarkersById[crow.id];
-      if (!marker) {
-        marker = new google.maps.Marker({
-          position: { lat: crow.lat, lng: crow.lng },
-          map: mapInstance,
-          title: crow.name,
-          icon: markerIcon(spotted),
-        });
-        marker.addListener("click", () => {
-          mapInfoWindow.setContent(`
-            <div style="font-family: Karla, sans-serif; max-width: 220px;">
-              <div style="font-family: Georgia, serif; font-weight: 700; font-size: 15px;">${escapeHtml(crow.name)}</div>
-              <div style="font-size: 12.5px; color: #5b6b58; margin-top: 2px;">${escapeHtml(crow.artist)}</div>
-              <div style="font-size: 12.5px; margin-top: 6px;">${escapeHtml(crow.location)}</div>
-              <div style="font-size: 12.5px; margin-top: 6px; color: #2f8577;">${spotted ? "&#10003; Spotted" : "Still hunting"}</div>
-              <button type="button" data-jump-crow="${crow.id}" style="margin-top: 8px; font-size: 12.5px; color: #2f8577; background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline;">Show in list</button>
-            </div>
-          `);
-          mapInfoWindow.open({ map: mapInstance, anchor: marker });
-          google.maps.event.addListenerOnce(mapInfoWindow, "domready", () => {
-            const btn = document.querySelector(`[data-jump-crow="${crow.id}"]`);
-            if (btn) btn.addEventListener("click", () => jumpToCrow(crow.id));
-          });
-        });
-        mapMarkersById[crow.id] = marker;
-      } else {
-        marker.setIcon(markerIcon(spotted));
-      }
-    });
-  }
-
-  function jumpToCrow(id) {
-    if (mapInfoWindow) mapInfoWindow.close();
+  function jumpToArea(area) {
     document.querySelector('.view-btn[data-view="list"]').click();
     const allTab = document.querySelector('.tab[data-filter="all"]');
     if (allTab.getAttribute("aria-pressed") !== "true") allTab.click();
-    const crow = CROWS.find(c => c.id === id);
-    if (!crow) return;
     requestAnimationFrame(() => {
-      const area = areaElements[crow.area];
-      if (area) area.open = true;
-      requestAnimationFrame(() => {
-        const card = crowCardElements[id];
-        if (!card) return;
-        card.scrollIntoView({ behavior: "smooth", block: "center" });
-        card.classList.add("card-flash");
-        setTimeout(() => card.classList.remove("card-flash"), 1200);
-      });
+      const target = areaElements[area];
+      if (!target) return;
+      target.open = true;
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      target.classList.add("area-flash");
+      setTimeout(() => target.classList.remove("area-flash"), 1200);
     });
   }
 
@@ -833,7 +752,6 @@
     const areasEl = document.getElementById("areas");
     areasEl.innerHTML = "";
     areaElements = {};
-    crowCardElements = {};
     const foundCount = CROWS.filter(c => hasPhoto(c.id)).length;
 
     document.getElementById("foundNum").textContent = foundCount;
@@ -874,7 +792,6 @@
 
         const card = document.createElement("div");
         card.className = "card" + (photoUrl ? " has-photo" : "");
-        crowCardElements[crow.id] = card;
         if (photoUrl) {
           card.dataset.action = "photo-view";
           card.dataset.id = crow.id;
@@ -918,7 +835,7 @@
       areasEl.appendChild(empty);
     }
 
-    if (mapInstance) syncMapMarkers();
+    renderMap();
   }
 
   function escapeHtml(str) {
@@ -988,8 +905,19 @@
       document.getElementById("areas").hidden = isMap;
       document.getElementById("mapView").hidden = !isMap;
       document.querySelector(".tabs").hidden = isMap;
-      if (isMap) ensureMap();
     });
+  });
+
+  function handleMapPin(target) {
+    const pin = target.closest('[data-action="jump-area"]');
+    if (pin) jumpToArea(pin.dataset.area);
+  }
+  document.getElementById("mapView").addEventListener("click", e => handleMapPin(e.target));
+  document.getElementById("mapView").addEventListener("keydown", e => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    if (!e.target.closest('[data-action="jump-area"]')) return;
+    e.preventDefault();
+    handleMapPin(e.target);
   });
 
   document.getElementById("resetBtn").addEventListener("click", async () => {
